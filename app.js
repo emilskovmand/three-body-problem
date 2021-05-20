@@ -3,7 +3,7 @@ const randomNumBetweenTwo = (min, max) => {
 
 }
 
-var GravitationalConstant = 6.673e-11; 
+var GravitationalConstant = 6.673; 
 
 class Body {
 
@@ -14,16 +14,33 @@ class Body {
         this.velocity = 0;
         this.position = (parameters.position) ? parameters.position : {x: randomNumBetweenTwo(200, window.innerWidth - 200), y: randomNumBetweenTwo(200, window.innerHeight - 200)};
         this.vector = {x: 0, y: 0};
-        this.vectorNormal = {x: 0, y: 0};
-        this.velocity = 0.01;
+        this.vectorNormalized = {x: 0, y: 0};
+        this.velocity = {x: 0, y: 0};
         this.radius = (parameters.radius) ? parameters.radius : 5;
         this.ctx = parameters.ctx ?? null;
 
         parameters.BodyGroup.push(this);
     }
 
-    update(centerOfMass) {
-        
+    update(centerOfMass, bodyArray) {
+        var bodyGroupExcludeSelf = bodyArray.filter((body) => body.name != this.name);
+        var accelerationResult = 0;
+
+        bodyGroupExcludeSelf.forEach((body) => {
+            // Distance = Magnitude
+            var distance = Math.sqrt(Math.pow(body.position.x - this.position.x, 2) + Math.pow(body.position.y - this.position.y, 2));
+
+            accelerationResult += GravitationalConstant * this.mass * (body.position.x - this.position.x) / Math.pow(distance, 3);
+            accelerationResult += GravitationalConstant * this.mass * (body.position.y - this.position.y) / Math.pow(distance, 3);
+        });
+
+        // Vector to Center of Mass
+        this.vector = {x: centerOfMass.x - this.position.x, y: centerOfMass.y - this.position.y};
+
+        // Vector to Center of Mass normalized
+        this.vectorNormalized = {x: this.vector.x / Math.sqrt(Math.abs(this.vector.x) + Math.abs(this.vector.y)), y: this.vector.y / Math.sqrt(Math.abs(this.vector.x) + Math.abs(this.vector.y))};
+        console.log(this.vectorNormalized);
+        console.log(Math.sqrt(Math.abs(this.vector.x) + Math.abs(this.vector.y)))
     }
 
     draw() {
@@ -55,11 +72,18 @@ function updateBG() {
 
 var Sun = new Body({
     BodyGroup: bodyMasses,
-    ctx: ctx
+    ctx: ctx,
+    name: "Sun",
+    mass: 1200,
+    color: "orange"
 });
+
 var Earth = new Body({
     BodyGroup: bodyMasses,
-    ctx: ctx
+    ctx: ctx,
+    mass: 1000,
+    name: "Earth",
+    color: "green"
 });
 
 function CurrentCenterOfMass() {
@@ -89,7 +113,7 @@ function animate() {
     const cm = CurrentCenterOfMass();
 
     bodyMasses.forEach((body) => {
-        body.update(cm);
+        body.update(cm, bodyMasses);
         body.draw();
     })
 }
