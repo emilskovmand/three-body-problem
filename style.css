@@ -2,7 +2,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     margin: 0 0 0 0;
     height: 100vh;
     width: 100vw;
@@ -11,5 +12,52 @@ html, body {
 #canvas {
     background-color: rgb(4, 4, 4);
     height: 100vh;
-    width: 100vw; 
+    width: 100vw;
+}
+
+#overlay {
+    position: absolute;
+    z-index: 1000;
+    height: 100vh;
+    width: 100vw;
+    color: white;
+}
+
+#stepsTaken {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+}
+
+#refresh {
+    filter: brightness(0) invert(1);
+    position: absolute;
+    height: 40px;
+    top: 30px;
+    right: 30px;
+    cursor: pointer;
+}
+
+.stepsAmount {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#stepsAmount {
+    outline: none;
+    width: 100px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px 3px #ddd;
+    border-radius: 4px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
