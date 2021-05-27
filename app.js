@@ -21,7 +21,6 @@ class Body {
         this.lastPosition = null;
         this.element = parameters.element ?? null;
         this.rotation = 0;
-        this.acceleration = 0;
 
         this.element.style.height = this.radius + "px"
         this.element.style.width = this.radius + "px"
@@ -210,16 +209,6 @@ document.getElementById("stepsAmount").addEventListener("change", (e) => {
 
 var animateCanvas = setInterval(() => {
     if (steps >= stepsTaken) {
-        var COM = CurrentCenterOfMass("Nothing");
-
-        // ctx.beginPath();
-        // ctx.arc(COM.x, COM.y, 3, Math.PI * 2, false);
-        // ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
-        // ctx.fill();
-        // ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
-        // ctx.strokeStyle = 'transparent';
-        // ctx.stroke();
-
         animate();
         stepsTaken++;
     }
