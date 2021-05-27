@@ -34,8 +34,8 @@ class Body {
             var distance = Math.sqrt(Math.pow(body.position.x - this.position.x, 2) + Math.pow(body.position.y - this.position.y, 2));
 
             if (distance > 10) {
-                accelerationResult += GravitationalConstant * this.mass * (body.position.x - this.position.x) / Math.pow(distance, 3);
-                accelerationResult += GravitationalConstant * this.mass * (body.position.y - this.position.y) / Math.pow(distance, 3);
+                accelerationResult += GravitationalConstant * body.mass * (body.position.x - this.position.x) / Math.pow(distance, 3);
+                accelerationResult += GravitationalConstant * body.mass * (body.position.y - this.position.y) / Math.pow(distance, 3);
             }
         });
 
@@ -138,7 +138,7 @@ function CurrentCenterOfMass(name) {
     var massCenterXCounting = 0, massCenterYCounting = 0, massCenterDenom = 0;
 
     for (let i = 0; i < bodyMasses.length; i++) {
-        // if (name === bodyMasses[i].name) continue;
+        if (name === bodyMasses[i].name) continue;
         var mass = bodyMasses[i].mass;
         var x = bodyMasses[i].position.x;
         var y = bodyMasses[i].position.y;
@@ -187,6 +187,16 @@ document.getElementById("stepsAmount").addEventListener("change", (e) => {
 var animateCanvas = setInterval(() => {
     if (steps >= stepsTaken) {
         ctx.clearRect(0, 0, innerWidth, innerHeight);
+        var COM = CurrentCenterOfMass("Nothing");
+
+        ctx.beginPath();
+        ctx.arc(COM.x, COM.y, 3, Math.PI * 2, false);
+        ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
+        ctx.fill();
+        ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
+        ctx.strokeStyle = 'transparent';
+        ctx.stroke();
+
         animate();
         stepsTaken++;
     }
