@@ -47,6 +47,15 @@ body {
     cursor: pointer;
 }
 
+#restart {
+    filter: brightness(0) invert(1);
+    position: absolute;
+    height: 40px;
+    top: 30px;
+    right: 90px;
+    cursor: pointer;
+}
+
 .stepsAmount {
     position: absolute;
     bottom: 30px;

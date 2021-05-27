@@ -21,6 +21,7 @@ class Body {
         this.lastPosition = null;
         this.element = parameters.element ?? null;
         this.rotation = 0;
+        this.initialPosition = { x: this.position.x, y: this.position.y};
 
         this.element.style.height = this.radius + "px"
         this.element.style.width = this.radius + "px"
@@ -103,8 +104,16 @@ class Body {
     }
 
     refresh(currentWindow) {
-        this.velocity = 0;
         this.position = { x: randomNumBetweenTwo(200, window.innerWidth - 200), y: randomNumBetweenTwo(200, window.innerHeight - 200) };
+        this.vector = { x: 0, y: 0 };
+        this.vectorNormalized = { x: 0, y: 0 };
+        this.velocity = { x: 0, y: 0 };
+        this.lastPosition = null;
+        this.initialPosition = { x: this.position.x, y: this.position.y};
+    }
+
+    restart() {
+        this.position = { x: this.initialPosition.x, y: this.initialPosition.y };
         this.vector = { x: 0, y: 0 };
         this.vectorNormalized = { x: 0, y: 0 };
         this.velocity = { x: 0, y: 0 };
@@ -200,7 +209,17 @@ function Refresh() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
 }
 
+function Restart() {
+    bodyMasses.forEach((body) => {
+        body.restart();
+    });
+    stepsTaken = 0;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+}
+
 document.getElementById("refresh").addEventListener("click", Refresh);
+
+document.getElementById("restart").addEventListener("click", Restart);
 
 document.getElementById("stepsAmount").addEventListener("change", (e) => {
     steps = e.target.value * 1;
