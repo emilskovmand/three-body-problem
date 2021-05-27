@@ -18,7 +18,14 @@ class Body {
         this.velocity = { x: 0, y: 0 };
         this.radius = (parameters.radius) ? parameters.radius : 5;
         this.ctx = parameters.ctx ?? null;
-        this.savedPosition = [];
+        this.lastPosition = null;
+        this.element = parameters.element ?? null;
+        this.rotation = 0;
+        this.acceleration = 0;
+
+        this.element.style.height = this.radius + "px"
+        this.element.style.width = this.radius + "px"
+        this.element.style.transform = "translate(" + this.position.x + "px," + this.position.y + "px)";
 
         parameters.BodyGroup.push(this);
     }
@@ -27,7 +34,16 @@ class Body {
         var bodyGroupExcludeSelf = bodyArray.filter((body) => body.name != this.name);
         var accelerationResult = 0;
         var centerOfMass = CurrentCenterOfMass(this.name);
-        this.savedPosition.push(this.position);
+        this.rotation += 0.5;
+
+        if (this.lastPosition) {
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.lastPosition.x + (this.radius / 2), this.lastPosition.y + (this.radius / 2));
+            this.ctx.lineTo(this.position.x + (this.radius / 2), this.position.y + (this.radius / 2));
+            this.ctx.strokeStyle = this.color;
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+        }
 
         bodyGroupExcludeSelf.forEach((body) => {
 
@@ -62,21 +78,25 @@ class Body {
     draw() {
         // Body Texture
         this.ctx.beginPath();
-        this.ctx.arc(this.position.x, this.position.y, this.radius, Math.PI * 2, false);
+        this.ctx.arc(this.position.x, this.position.y, .5, Math.PI * 2, false);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
         this.ctx.fillStyle = this.color;
         this.ctx.strokeStyle = 'transparent';
         this.ctx.stroke();
 
-        this.drawLines();
+        var xDerivedImg = this.position.x - (this.radius / 2);
+        var yDerivedImg = this.position.y - (this.radius / 2);
+
+        this.element.style.transform = "translate(" + xDerivedImg + "px," + yDerivedImg + "px) rotate(" + this.rotation + "deg)";
     }
 
     drawLines() {
+        if (this.savedPosition.length > 3) return;
         this.ctx.beginPath();
-        for (let i = 0; i < 3; i += 3) {
+        for (let i = 0; i < this.savedPosition.length; i++) {
             this.ctx.moveTo(this.savedPosition[i].x, this.savedPosition[i].y);
-            this.ctx.lineTo(this.savedPosition[i].x + 1, this.savedPosition[i].y + 1);
+            this.ctx.lineTo(this.savedPosition[1 + i].x, this.savedPosition[1 + i].y);
         }
         this.ctx.strokeStyle = this.color;
         this.ctx.lineWidth = 1;
@@ -89,7 +109,7 @@ class Body {
         this.vector = { x: 0, y: 0 };
         this.vectorNormalized = { x: 0, y: 0 };
         this.velocity = { x: 0, y: 0 };
-        this.savedPosition = [];
+        this.lastPosition = null;
     }
 }
 
@@ -111,7 +131,8 @@ var Sun = new Body({
     name: "Sun",
     mass: 100,
     color: "orange",
-    radius: 15
+    radius: 30,
+    element: document.querySelector('#Sun')
 });
 
 var Earth = new Body({
@@ -120,7 +141,8 @@ var Earth = new Body({
     mass: 80,
     name: "Earth",
     color: "green",
-    radius: 10
+    radius: 20,
+    element: document.querySelector('#Earth')
 });
 
 var Mars = new Body({
@@ -129,7 +151,8 @@ var Mars = new Body({
     mass: 80,
     name: "Mars",
     color: "red",
-    radius: 9
+    radius: 13,
+    element: document.querySelector('#Mars')
 })
 
 function CurrentCenterOfMass(name) {
@@ -175,6 +198,7 @@ function Refresh() {
         body.refresh();
     })
     stepsTaken = 0;
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
 }
 
 document.getElementById("refresh").addEventListener("click", Refresh);
@@ -186,16 +210,15 @@ document.getElementById("stepsAmount").addEventListener("change", (e) => {
 
 var animateCanvas = setInterval(() => {
     if (steps >= stepsTaken) {
-        ctx.clearRect(0, 0, innerWidth, innerHeight);
         var COM = CurrentCenterOfMass("Nothing");
 
-        ctx.beginPath();
-        ctx.arc(COM.x, COM.y, 3, Math.PI * 2, false);
-        ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
-        ctx.fill();
-        ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
-        ctx.strokeStyle = 'transparent';
-        ctx.stroke();
+        // ctx.beginPath();
+        // ctx.arc(COM.x, COM.y, 3, Math.PI * 2, false);
+        // ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
+        // ctx.fill();
+        // ctx.fillStyle = `rgba(32, 45, 21, 0.5)`;
+        // ctx.strokeStyle = 'transparent';
+        // ctx.stroke();
 
         animate();
         stepsTaken++;
